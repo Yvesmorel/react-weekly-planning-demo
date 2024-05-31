@@ -1,113 +1,206 @@
-import Image from "next/image";
+"use client";
 
+import { useState, Dispatch, SetStateAction } from "react";
+import Calendar, {
+  millisecondsToHours,
+  checkDuplicates,
+  updateOffsetWithDateCalendar,
+  updateCalendarDateWithOffset,
+} from "react-weekly-planning";
+import { Avatar, DatePicker } from "antd";
+import dayjs from "dayjs";
+import {
+  GroupFeildsType,
+  TaskFeildsType,
+} from "react-weekly-planning/definitions";
+import { Button } from "@/components/ui/button";
+import { UseAppContext } from "@/context/AppContext";
+import { Toaster, toast } from "sonner";
+import { montserrat, rublik } from "./ui/font";
+import AddTaskTigger from "./ui/add-task-tigger";
+import { faCode, faNotesMedical } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+// Group rendering component
+const GroupRender = ({ currentGroup }: { currentGroup: GroupFeildsType }) => (
+  <div className="w-full h-full flex items-center p-4 gap-4">
+    <Avatar shape="square" src={currentGroup.imageUrl}>
+      {currentGroup.label && currentGroup.label[0]}
+    </Avatar>
+    <label>{currentGroup.label}</label>
+  </div>
+);
+
+// Groups header rendering component
+const GroupsHeadRender = () => (
+  <div className="w-full h-[50px] text-left flex items-center">
+    My Activities
+  </div>
+);
+
+// Home component
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+  const [calendarDate, setCalendarDate] = useState<Date>(new Date());
+  const [calendarOffset, setCalendarOffset] = useState<number>(0);
+  const { tasks, setTasks } = UseAppContext();
+
+  const [Groups] = useState([
+    {
+      id: "1",
+      label: "ReactJS",
+      imageUrl: "./react.svg",
+      tasks: ["Hooks", "Context API", "Redux", "React-memo"],
+      type: "code",
+    },
+    {
+      id: "2",
+      label: "JavaScript",
+      imageUrl: "./javascript.svg",
+      tasks: ["Class", "Promise", "Strict mode", "Closures"],
+      type: "code",
+    },
+    {
+      id: "3",
+      label: "Sport",
+      imageUrl: "./sport.svg",
+      tasks: ["push ups", "stretching"],
+      type: "healt",
+    },
+  ]);
+
+  const TaskContainer = ({ currentTask }: { currentTask: TaskFeildsType }) => {
+    const taskType = Groups.find(
+      (group) => group.id === currentTask.groupId
+    )?.type;
+    return (
+      <div className="bg-white w-full h-full border-l-[6px] border-[#457993] flex flex-col justify-center pl-1 relative">
+        <div className="-">
+          {
+            <FontAwesomeIcon
+              icon={taskType === "code" ? faCode : faNotesMedical}
             />
-          </a>
+          }
+        </div>
+        <p className="font-semibold">
+          {`${millisecondsToHours(
+            currentTask.taskStart
+          )} - ${millisecondsToHours(currentTask.taskEnd)}`}
+        </p>
+        
+        <p>{currentTask.task}</p>
+      </div>
+    );
+  };
+
+  const checkIfTaskExistInGroup = (groupId: string, task: string) => {
+    return Groups.find((group) => group.id === groupId)?.tasks.includes(task);
+  };
+
+  return (
+    <main className="flex w-screen h-screen flex-col items-center justify-between ">
+      <div className="w-full h-full flex flex-col">
+        <Actions
+          setCalendarOffset={setCalendarOffset}
+          calendarDate={calendarDate}
+          setCalendarDate={setCalendarDate}
+          calendarOffset={calendarOffset}
+        />
+        <div className="w-full flex flex-1 overflow-auto bg-[#f2f8f8]">
+          <Calendar
+            className={`${rublik.className} rounded border-t calendar`}
+            taskContainerStyle={{ border: "none" ,zIndex:10}}
+            groupsColsStyle={{ width: "100px" }}
+            tasks={tasks}
+            groupsHeadRender={GroupsHeadRender}
+            dayClassName={`${montserrat.className} text-left pl-2`}
+            groups={Groups}
+            date={calendarDate}
+            weekOffset={calendarOffset}
+            groupRender={GroupRender}
+            addTaskRender={AddTaskTigger}
+            handleDragTask={(event, currentTask) => {}}
+            taskRender={TaskContainer}
+            handleDropTask={(
+              event,
+              taskStart,
+              taskEnd,
+              taskDate,
+              groupId,
+              dayIndex,
+              newTask,
+              newTasks
+            ) => {
+              if (!checkIfTaskExistInGroup(groupId, newTask.task)) {
+                toast(
+                  `${newTask.task} does not belong to the tasks of this group`
+                );
+                return;
+              }
+              if (checkDuplicates(tasks, taskStart, taskEnd, newTask.groupId)) {
+                toast("Duplicates detected");
+                return;
+              }
+              setTasks(newTasks);
+            }}
+          />
         </div>
       </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      <Toaster />
     </main>
   );
 }
+
+// Actions component
+type ActionsPropsType = {
+  setCalendarDate: Dispatch<SetStateAction<Date>>;
+  calendarDate: Date;
+  setCalendarOffset: Dispatch<SetStateAction<number>>;
+  calendarOffset: number;
+};
+
+const Actions = ({
+  setCalendarDate,
+  calendarDate,
+  setCalendarOffset,
+  calendarOffset,
+}: ActionsPropsType) => {
+  const handleChangeCalendarDate = (value: dayjs.Dayjs) => {
+    setCalendarDate(value.toDate());
+    const newOffset = updateOffsetWithDateCalendar(value.toDate());
+    setCalendarOffset(newOffset);
+    console.log(newOffset);
+  };
+
+  const handleChangeOffset = (offset: number) => {
+    const newOffset = calendarOffset + offset;
+    const newCalendarDate = updateCalendarDateWithOffset(offset, calendarDate);
+    setCalendarOffset(newOffset);
+    setCalendarDate(newCalendarDate);
+  };
+
+  function weekFormat(value: dayjs.Dayjs) {
+    const startOfWeek = value.startOf("week").format("DD MMM YYYY");
+    const endOfWeek = value.endOf("week").format("DD MMM YYYY");
+    return `${startOfWeek} - ${endOfWeek}`;
+  }
+
+  return (
+    <div className="w-full h-[50px] flex p-2 items-center justify-between">
+      <DatePicker
+        value={dayjs(calendarDate)}
+        onChange={handleChangeCalendarDate}
+        picker="week"
+        format={weekFormat}
+        className="border-none bg-[#f2f8f8]"
+      />
+      <div className="w-auto h-auto flex gap-2">
+        <Button className="bg-[#f2f8f8]" onClick={() => handleChangeOffset(-7)} variant="secondary">
+          Previous week
+        </Button>
+        <Button className="bg-[#f2f8f8]" onClick={() => handleChangeOffset(+7)} variant="secondary">
+          Next week
+        </Button>
+      </div>
+    </div>
+  );
+};
