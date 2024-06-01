@@ -51,6 +51,7 @@ export default function Home() {
       imageUrl: "./react.svg",
       tasks: ["Hooks", "Context API", "Redux", "React-memo"],
       type: "code",
+      color: "#01a3c0d1",
     },
     {
       id: "2",
@@ -58,26 +59,27 @@ export default function Home() {
       imageUrl: "./javascript.svg",
       tasks: ["Class", "Promise", "Strict mode", "Closures"],
       type: "code",
+      color: "#cdbb28",
     },
     {
       id: "3",
       label: "Sport",
       imageUrl: "./sport.svg",
       tasks: ["push ups", "stretching"],
-      type: "healt",
+      type: "health",
+      color: "#FA7070",
     },
   ]);
 
   const TaskContainer = ({ currentTask }: { currentTask: TaskFeildsType }) => {
-    const taskType = Groups.find(
-      (group) => group.id === currentTask.groupId
-    )?.type;
+    const task = Groups.find((group) => group.id === currentTask.groupId);
     return (
       <div className="bg-white w-full h-full border-l-[6px] border-[#457993] flex flex-col justify-center pl-1 relative">
         <div className="-">
           {
             <FontAwesomeIcon
-              icon={taskType === "code" ? faCode : faNotesMedical}
+              style={{ color: task?.color }}
+              icon={task?.type === "code" ? faCode : faNotesMedical}
             />
           }
         </div>
@@ -86,7 +88,7 @@ export default function Home() {
             currentTask.taskStart
           )} - ${millisecondsToHours(currentTask.taskEnd)}`}
         </p>
-        
+
         <p>{currentTask.task}</p>
       </div>
     );
@@ -108,7 +110,7 @@ export default function Home() {
         <div className="w-full flex flex-1 overflow-auto bg-[#f2f8f8]">
           <Calendar
             className={`${rublik.className} rounded border-t calendar`}
-            taskContainerStyle={{ border: "none" ,zIndex:10}}
+            taskContainerStyle={{ border: "none", zIndex: 10 }}
             groupsColsStyle={{ width: "100px" }}
             tasks={tasks}
             groupsHeadRender={GroupsHeadRender}
@@ -118,7 +120,15 @@ export default function Home() {
             weekOffset={calendarOffset}
             groupRender={GroupRender}
             addTaskRender={AddTaskTigger}
-            handleDragTask={(event, currentTask) => {}}
+            handleDragTask={(event, currentTask) => {
+              event.currentTarget.style.transition = "0.2s";
+              event.currentTarget.style.transform = "rotate(5deg)";
+              event.currentTarget.style.opacity = "0.3";
+            }}
+            handleDragTaskEnd={(event) => {
+              event.currentTarget.style.transform = "rotate(0deg)";
+              event.currentTarget.style.opacity = "1";
+            }}
             taskRender={TaskContainer}
             handleDropTask={(
               event,
@@ -168,7 +178,6 @@ const Actions = ({
     setCalendarDate(value.toDate());
     const newOffset = updateOffsetWithDateCalendar(value.toDate());
     setCalendarOffset(newOffset);
-    console.log(newOffset);
   };
 
   const handleChangeOffset = (offset: number) => {
@@ -191,13 +200,12 @@ const Actions = ({
         onChange={handleChangeCalendarDate}
         picker="week"
         format={weekFormat}
-        className="border-none bg-[#f2f8f8]"
       />
       <div className="w-auto h-auto flex gap-2">
-        <Button className="bg-[#f2f8f8]" onClick={() => handleChangeOffset(-7)} variant="secondary">
+        <Button className="bg-[#f2f8fb]" onClick={() => handleChangeOffset(-7)} variant="secondary">
           Previous week
         </Button>
-        <Button className="bg-[#f2f8f8]" onClick={() => handleChangeOffset(+7)} variant="secondary">
+        <Button className="bg-[#f2f8fb]" onClick={() => handleChangeOffset(+7)} variant="secondary">
           Next week
         </Button>
       </div>
