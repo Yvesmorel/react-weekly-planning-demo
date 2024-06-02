@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, Dispatch, SetStateAction } from "react";
+import { useState, Dispatch, SetStateAction,useEffect } from "react";
 import Calendar, {
   millisecondsToHours,
   checkDuplicates,
   updateOffsetWithDateCalendar,
   updateCalendarDateWithOffset,
+  getTasksSaved
 } from "react-weekly-planning";
 import { Avatar, DatePicker } from "antd";
 import dayjs from "dayjs";
@@ -21,7 +22,7 @@ import AddTaskTigger from "./ui/add-task-tigger";
 import { faCode, faNotesMedical } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-// Group rendering comp..nent
+// Group rendering component
 const GroupRender = ({ currentGroup }: { currentGroup: GroupFeildsType }) => (
   <div className="w-full h-full flex items-center p-4 gap-4">
     <Avatar shape="square" src={currentGroup.imageUrl}>
@@ -43,6 +44,11 @@ export default function Home() {
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
   const [calendarOffset, setCalendarOffset] = useState<number>(0);
   const { tasks, setTasks } = UseAppContext();
+  useEffect(()=>{
+ console.log(getTasksSaved());
+ 
+      
+  },[])
   const [Groups] = useState([
     {
       id: "1",

@@ -25,9 +25,15 @@ const CreatePlanningContainer = ({
   timeOfdayRange: number[];
   dayInfo: dayInfoType;
 }) => {
-  const [selectedTimeStart, setSelectedTimeStart] = useState<number>(timeOfdayRange[0]);
-  const [selectedTimeEnd, setSelectedTimeEnd] = useState<number>(timeOfdayRange[1]);
-  const [selectedTask, setSelectedTask] = useState<string>(currentGroup.tasks[0]);
+  const [selectedTimeStart, setSelectedTimeStart] = useState<number>(
+    timeOfdayRange[0]
+  );
+  const [selectedTimeEnd, setSelectedTimeEnd] = useState<number>(
+    timeOfdayRange[1]
+  );
+  const [selectedTask, setSelectedTask] = useState<string>(
+    currentGroup.tasks[0]
+  );
 
   const { tasks, setTasks } = UseAppContext();
 
@@ -37,7 +43,14 @@ const CreatePlanningContainer = ({
       return;
     }
 
-    if (checkDuplicates(tasks, selectedTimeStart, selectedTimeEnd, currentGroup.id)) {
+    if (
+      checkDuplicates(
+        tasks,
+        selectedTimeStart,
+        selectedTimeEnd,
+        currentGroup.id
+      )
+    ) {
       toast("Duplicates detected");
       return;
     }
@@ -50,6 +63,7 @@ const CreatePlanningContainer = ({
       groupId: currentGroup.id,
       dayIndex: dayInfo.positionDay,
       taskId: `${tasks.length}`,
+      taskExpiryDate: new Date(Date.now() + 86400000),
     };
 
     setTasks([...tasks, newTask]);
@@ -57,9 +71,11 @@ const CreatePlanningContainer = ({
   };
 
   return (
-    <div className={`${montserrat.className} w-full h-full flex flex-col gap-2`}>
+    <div
+      className={`${montserrat.className} w-full h-full flex flex-col gap-2`}
+    >
       <Select value={selectedTask} onValueChange={setSelectedTask}>
-      <p>Task</p>
+        <p>Task</p>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select Task" />
         </SelectTrigger>
