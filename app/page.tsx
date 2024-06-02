@@ -21,7 +21,7 @@ import AddTaskTigger from "./ui/add-task-tigger";
 import { faCode, faNotesMedical } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-// Group rendering component
+// Group rendering comp..nent
 const GroupRender = ({ currentGroup }: { currentGroup: GroupFeildsType }) => (
   <div className="w-full h-full flex items-center p-4 gap-4">
     <Avatar shape="square" src={currentGroup.imageUrl}>
