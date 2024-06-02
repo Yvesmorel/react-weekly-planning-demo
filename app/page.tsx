@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, Dispatch, SetStateAction,useEffect } from "react";
+import { useState, Dispatch, SetStateAction, useEffect } from "react";
 import Calendar, {
   millisecondsToHours,
   checkDuplicates,
   updateOffsetWithDateCalendar,
   updateCalendarDateWithOffset,
-  getTasksSaved
+  getSavedTasks,
 } from "react-weekly-planning";
 import { Avatar, DatePicker } from "antd";
 import dayjs from "dayjs";
@@ -44,11 +44,9 @@ export default function Home() {
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
   const [calendarOffset, setCalendarOffset] = useState<number>(0);
   const { tasks, setTasks } = UseAppContext();
-  useEffect(()=>{
- console.log(getTasksSaved());
- 
-      
-  },[])
+  useEffect(() => {
+    setTasks(getSavedTasks());
+  }, []);
   const [Groups] = useState([
     {
       id: "1",
@@ -207,10 +205,18 @@ const Actions = ({
         format={weekFormat}
       />
       <div className="w-auto h-auto flex gap-2">
-        <Button className="bg-[#f2f8fb]" onClick={() => handleChangeOffset(-7)} variant="secondary">
+        <Button
+          className="bg-[#f2f8fb]"
+          onClick={() => handleChangeOffset(-7)}
+          variant="secondary"
+        >
           Previous week
         </Button>
-        <Button className="bg-[#f2f8fb]" onClick={() => handleChangeOffset(+7)} variant="secondary">
+        <Button
+          className="bg-[#f2f8fb]"
+          onClick={() => handleChangeOffset(+7)}
+          variant="secondary"
+        >
           Next week
         </Button>
       </div>
