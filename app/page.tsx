@@ -43,7 +43,6 @@ export default function Home() {
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
   const [calendarOffset, setCalendarOffset] = useState<number>(0);
   const { tasks, setTasks } = UseAppContext();
-
   const [Groups] = useState([
     {
       id: "1",
