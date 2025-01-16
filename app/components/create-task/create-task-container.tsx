@@ -7,15 +7,17 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { toast } from "sonner";
-import { montserrat } from "@/app/ui/font";
+import { montserrat } from "@/app/components/font";
 import { Button } from "@/components/ui/button";
 import {
   GroupFeildsType,
   dayInfoType,
 } from "react-weekly-planning/definitions";
-import { millisecondsToHours, checkDuplicates } from "react-weekly-planning";
-import { UseAppContext } from "@/context/AppContext";
-
+import {
+  millisecondsToHours,
+  checkDuplicates,
+} from "react-weekly-planning/lib/utils";
+import { useAppContext } from "../custom-hooks/context";
 const CreatePlanningContainer = ({
   currentGroup,
   timeOfdayRange,
@@ -35,7 +37,7 @@ const CreatePlanningContainer = ({
     currentGroup.tasks[0]
   );
 
-  const { tasks, setTasks } = UseAppContext();
+  const { tasks, setTasks } = useAppContext();
 
   const handleAddTask = () => {
     if (selectedTimeStart >= selectedTimeEnd) {

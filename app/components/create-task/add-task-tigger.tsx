@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { calculateTimeOfDayRange, CustomDate } from "@/lib/utils";
+import { calculateTimeOfDayRange, CustomDate } from "@/app/lib/utils";
 import {
   Dialog,
   DialogContent,

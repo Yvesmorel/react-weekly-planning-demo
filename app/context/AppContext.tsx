@@ -6,7 +6,7 @@ type AppContextType = {
   setTasks: Dispatch<SetStateAction<TasksType>>;
 };
 
-const AppContext = createContext<AppContextType>({
+export const AppContext = createContext<AppContextType>({
   tasks: [],
   setTasks: () => {},
 });
@@ -21,4 +21,4 @@ export default function AppContextProvider({ children }: { children: JSX.Element
   );
 }
 
-export const UseAppContext = () => useContext(AppContext);
+
