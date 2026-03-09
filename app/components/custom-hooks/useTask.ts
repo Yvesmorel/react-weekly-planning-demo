@@ -23,29 +23,21 @@ export const useTasks = () => {
     return Groups.find((group) => group.id === groupId)?.tasks.includes(task);
   };
 
-  const handleDragTaskEnd = useCallback((event: DragEvent<HTMLDivElement>) => {
+  const handleDragTaskEnd = (event: DragEvent<HTMLDivElement>) => {
     event.currentTarget.style.transform = "rotate(0deg)";
     event.currentTarget.style.opacity = "1";
-  }, []);
-  const handleDragTask = useCallback(
-    
+  };
+  const handleDragTask =
+
     (event: DragEvent<HTMLDivElement>, currentTask: TaskFeildsType) => {
       event.currentTarget.style.transition = "0.2s";
       event.currentTarget.style.transform = "rotate(5deg)";
       event.currentTarget.style.opacity = "0.3";
-    },
-    []
-  );
-  const handleDropTask = useCallback(
+    }
+
+  const handleDropTask =
     (
-      event: React.DragEvent<HTMLTableDataCellElement>,
-      taskStart: number,
-      taskEnd: number,
-      taskDate: Date,
-      groupId: string,
-      dayIndex: number,
-      newTask: TaskFeildsType,
-      newTasks: TasksType
+      event: DragEvent<HTMLDivElement>, taskStart: number, taskEnd: number, taskDate: Date, groupId: string, dayIndex: number, newTask: TaskFeildsType, newTasks: TasksType
     ) => {
       if (!checkIfTaskExistInGroup(groupId, newTask.task)) {
         toast(`${newTask.task} does not belong to the tasks of this group`);
@@ -56,9 +48,10 @@ export const useTasks = () => {
         return;
       }
       setTasks(newTasks);
-    },
-    []
-  );
+    }
+
+
+
 
   return {
     calendarDate,

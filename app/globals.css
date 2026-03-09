@@ -70,15 +70,26 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
+
 .calendar th {
   z-index: 40;
-  background-color: #f2f8f8;
- 
+  background-color: white;
+
 }
-.calendar td{
+
+.calendar td {
   border: none;
+}
+
+.planningCalendar thead {
+  background-color: white;
+}
+
+.dayTh {
+  background-color: white;
 }

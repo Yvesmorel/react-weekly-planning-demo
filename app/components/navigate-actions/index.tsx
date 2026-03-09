@@ -13,6 +13,7 @@ type ActionsPropsType = {
   calendarDate: Date;
   setCalendarOffset: Dispatch<SetStateAction<number>>;
   calendarOffset: number;
+  scope: "week" | "day";
 };
 
 const Actions = ({
@@ -20,8 +21,9 @@ const Actions = ({
   calendarDate,
   setCalendarOffset,
   calendarOffset,
+  scope,
 }: ActionsPropsType) => {
-    
+
   const handleChangeCalendarDate = (value: dayjs.Dayjs) => {
     setCalendarDate(value.toDate());
     const newOffset = updateOffsetWithDateCalendar(value.toDate());
@@ -35,11 +37,14 @@ const Actions = ({
     setCalendarDate(newCalendarDate);
   };
 
-  function weekFormat(value: dayjs.Dayjs) {
+  const dateFormat = (value: dayjs.Dayjs) => {
+    if (scope === "day") {
+      return value.format("DD MMM YYYY");
+    }
     const startOfWeek = value.startOf("week").format("DD MMM YYYY");
     const endOfWeek = value.endOf("week").format("DD MMM YYYY");
     return `${startOfWeek} - ${endOfWeek}`;
-  }
+  };
 
   return (
     <div className="w-full h-[50px] flex p-2 items-center justify-between">
@@ -47,22 +52,23 @@ const Actions = ({
         value={dayjs(calendarDate)}
         onChange={handleChangeCalendarDate}
         picker="week"
-        format={weekFormat}
+        format={dateFormat}
+        allowClear={false}
       />
       <div className="w-auto h-auto flex gap-2">
         <Button
           className="bg-[#f2f8fb]"
-          onClick={() => handleChangeOffset(-7)}
+          onClick={() => handleChangeOffset(scope === "day" ? -1 : -7)}
           variant="secondary"
         >
-          Previous week
+          {scope === "day" ? "Previous day" : "Previous week"}
         </Button>
         <Button
           className="bg-[#f2f8fb]"
-          onClick={() => handleChangeOffset(+7)}
+          onClick={() => handleChangeOffset(scope === "day" ? 1 : 7)}
           variant="secondary"
         >
-          Next week
+          {scope === "day" ? "Next day" : "Next week"}
         </Button>
       </div>
     </div>
@@ -76,5 +82,6 @@ export default memo(
     nextProps: Readonly<ActionsPropsType>
   ) =>
     prevProps.calendarDate === nextProps.calendarDate &&
-    prevProps.calendarOffset === nextProps.calendarOffset
+    prevProps.calendarOffset === nextProps.calendarOffset &&
+    prevProps.scope === nextProps.scope
 );

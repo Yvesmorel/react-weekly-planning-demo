@@ -57,6 +57,7 @@ const CreatePlanningContainer = ({
       return;
     }
 
+
     const newTask = {
       taskStart: selectedTimeStart,
       taskEnd: selectedTimeEnd,
@@ -68,7 +69,10 @@ const CreatePlanningContainer = ({
       taskExpiryDate: new Date(Date.now() + 86400000),
     };
 
+
+
     setTasks([...tasks, newTask]);
+
     toast("Task created");
   };
 
