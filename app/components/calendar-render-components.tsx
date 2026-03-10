@@ -1,13 +1,20 @@
-import { faCode, faNotesMedical } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faNotesMedical, faCopy, faScissors, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "antd";
 import { ReactNode, useMemo } from "react";
-import { Groups } from "../lib/utils";
 import {
   GroupFeildsType,
   TaskFeildsType,
 } from "react-weekly-planning/definitions";
 import { millisecondsToHours } from "react-weekly-planning/lib/utils";
+import { useAppContext } from "./custom-hooks/context";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { toast } from "sonner";
 
 export const MODERN_COLORS = [
   "bg-blue-50 border-blue-400 text-blue-900 shadow-blue-100",
@@ -29,6 +36,22 @@ export const getTaskColorClass = (task: TaskFeildsType) => {
   return MODERN_COLORS[Math.abs(hash) % MODERN_COLORS.length];
 };
 
+import AddGroupDialog from "./create-group/create-group-dialog";
+
+const AVATAR_COLORS = [
+  "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8",
+  "#F06292", "#AED581", "#FFD54F", "#4DB6AC", "#7986CB",
+  "#9575CD", "#4FC3F7", "#81C784", "#DCE775", "#FF8A65"
+];
+
+const getAvatarColor = (label: string) => {
+  let hash = 0;
+  for (let i = 0; i < label.length; i++) {
+    hash = label.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+};
+
 // Group rendering component
 
 export const GroupRender = ({
@@ -39,11 +62,19 @@ export const GroupRender = ({
 
 
   return (
-    <div className="w-full h-full flex items-center p-4 gap-4">
-      <Avatar shape="square" src={currentGroup.imageUrl}>
+    <div className="w-full h-full flex items-center p-2 sm:p-4 gap-2 sm:gap-4 group cursor-pointer relative overflow-hidden">
+      <Avatar 
+        shape="square" 
+        src={currentGroup.imageUrl}
+        className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10"
+        style={{ backgroundColor: getAvatarColor(currentGroup.label || ""), verticalAlign: 'middle', border: 'none' }}
+      >
         {currentGroup.label && currentGroup.label[0]}
       </Avatar>
-      <label>{currentGroup.label}</label>
+      <div className="flex flex-1 items-center justify-between min-w-0">
+        <label className="cursor-pointer font-medium truncate text-xs sm:text-sm">{currentGroup.label}</label>
+        <AddGroupDialog groupToEdit={currentGroup} />
+      </div>
     </div>
   );
 };
@@ -60,32 +91,69 @@ export const TaskContainer = ({
 }: {
   currentTask: TaskFeildsType;
 }): ReactNode => {
-
-  const task = Groups.find((group) => group.id === currentTask.groupId);
+  const { groups, tasks, setTasks, setClipboard, clipboard } = useAppContext();
+  const taskGroup = groups.find((group) => group.id === currentTask.groupId);
 
   const colorClass = useMemo(() => getTaskColorClass(currentTask), [currentTask]);
 
+  const isInClipboard = clipboard?.task?.taskId === currentTask.taskId;
+  const isCut = isInClipboard && clipboard?.action === "cut";
+
+  const animationClass = `task-container-anim ${isInClipboard ? "task-in-clipboard" : ""} ${isCut ? "task-cut-state" : ""}`;
+
+  const handleCopy = () => {
+    setClipboard({ task: currentTask, action: "copy" });
+    toast("Task copied to clipboard");
+  };
+
+  const handleCut = () => {
+    setClipboard({ task: currentTask, action: "cut" });
+    toast("Task cut to clipboard");
+  };
+
+  const handleDelete = () => {
+    setTasks(tasks.filter((t) => t.taskId !== currentTask.taskId));
+    toast("Task deleted");
+  };
+
   return (
-    <div
-      className={`w-full h-full border-l-4  flex flex-col justify-center px-3 py-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${colorClass}`}
+    <ContextMenu>
+      <ContextMenuTrigger className="w-full h-full">
+        <div
+          className={`w-full h-full border-l-2 sm:border-l-4 flex flex-col justify-center px-1.5 sm:px-3 py-1 sm:py-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${colorClass} overflow-hidden ${animationClass}`}
+        >
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
+            <FontAwesomeIcon
+              style={{ color: taskGroup?.color }}
+              icon={taskGroup?.type === "code" ? faCode : faNotesMedical}
+              className="text-[10px] sm:text-sm"
+            />
+            <p className="text-[9px] sm:text-xs font-semibold opacity-80 whitespace-nowrap">
+              {`${millisecondsToHours(currentTask.taskStart)} - ${millisecondsToHours(
+                currentTask.taskEnd
+              )}`}
+            </p>
+          </div>
 
-    >
-      <div className="flex items-center gap-2 mb-1">
-        {
-          <FontAwesomeIcon
-            style={{ color: task?.color }}
-            icon={task?.type === "code" ? faCode : faNotesMedical}
-            className="text-sm"
-          />
-        }
-        <p className="text-xs font-semibold opacity-80">
-          {`${millisecondsToHours(currentTask.taskStart)} - ${millisecondsToHours(
-            currentTask.taskEnd
-          )}`}
-        </p>
-      </div>
-
-      <p className="text-sm font-medium leading-tight line-clamp-2">{currentTask.task}</p>
-    </div>
+          <p className="text-[10px] sm:text-sm font-medium leading-tight line-clamp-1 sm:line-clamp-2 break-words">
+            {currentTask.task}
+          </p>
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem onClick={handleCopy} className="gap-2">
+          <FontAwesomeIcon icon={faCopy} className="w-3 h-3" />
+          <span>Copy</span>
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handleCut} className="gap-2">
+          <FontAwesomeIcon icon={faScissors} className="w-3 h-3" />
+          <span>Cut</span>
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handleDelete} className="gap-2 text-red-600 focus:text-red-600">
+          <FontAwesomeIcon icon={faTrash} className="w-3 h-3" />
+          <span>Delete</span>
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };

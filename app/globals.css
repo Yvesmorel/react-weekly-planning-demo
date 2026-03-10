@@ -93,3 +93,78 @@
 .dayTh {
   background-color: white;
 }
+
+@keyframes task-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes clipboard-shimmer {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.taskContainer {
+  overflow: hidden;
+}
+
+
+.task-container-anim {
+  animation: task-appear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden !important; /* Force internal overflow hidden */
+}
+
+/* Hide scrollbars globally for tasks */
+.task-container-anim::-webkit-scrollbar {
+  display: none !important;
+}
+
+.task-container-anim {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.task-container-anim:hover {
+  transform: translateY(-4px) scale(1.03);
+  z-index: 50 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.task-container-anim:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.task-in-clipboard {
+  animation: clipboard-shimmer 2s infinite ease-in-out;
+  border-style: dashed !important;
+  filter: brightness(1.1);
+}
+
+.task-cut-state {
+  filter: grayscale(0.8) opacity(0.4);
+}
+
+.CalendarTableForDay {
+  display: flex;
+  flex-direction: column;
+}

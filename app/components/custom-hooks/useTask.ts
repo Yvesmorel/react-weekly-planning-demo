@@ -4,23 +4,49 @@ import {
 } from "react-weekly-planning/lib/utils";
 import { useAppContext } from "./context";
 import { DragEvent, useEffect, useState } from "react";
-import { Groups } from "@/app/lib/utils";
-import { TaskFeildsType, TasksType } from "react-weekly-planning/definitions";
+import { TaskFeildsType, TasksType, GroupFeildsType } from "react-weekly-planning/definitions";
 import { toast } from "sonner";
-import { useCallback } from "react";
+import { Groups as defaultGroups } from "@/app/lib/utils";
+
+export const getSavedGroups = (): GroupFeildsType[] => {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("groups");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return defaultGroups;
+      }
+    }
+  }
+  return defaultGroups;
+};
 
 export const useTasks = () => {
 
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
   const [calendarOffset, setCalendarOffset] = useState<number>(0);
-  const { setTasks, tasks } = useAppContext();
+  const { setTasks, tasks, groups, setGroups } = useAppContext();
 
   useEffect(() => {
     setTasks(getSavedTasks());
+    setGroups(getSavedGroups());
   }, []);
 
+  useEffect(() => {
+    if (groups !== defaultGroups && groups.length > 0) {
+      localStorage.setItem("groups", JSON.stringify(groups));
+    }
+  }, [groups]);
+
+  useEffect(() => {
+    if (tasks && tasks.length >= 0) {
+      localStorage.setItem("planning_tasks", JSON.stringify(tasks));
+    }
+  }, [tasks]);
+
   const checkIfTaskExistInGroup = (groupId: string, task: string) => {
-    return Groups.find((group) => group.id === groupId)?.tasks.includes(task);
+    return groups.find((group) => group.id === groupId)?.tasks.includes(task);
   };
 
   const handleDragTaskEnd = (event: DragEvent<HTMLDivElement>) => {
@@ -59,6 +85,7 @@ export const useTasks = () => {
     calendarOffset,
     setCalendarOffset,
     tasks,
+    groups,
     handleDropTask,
     handleDragTaskEnd,
     handleDragTask,

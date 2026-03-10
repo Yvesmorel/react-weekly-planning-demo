@@ -47,24 +47,27 @@ const Actions = ({
   };
 
   return (
-    <div className="w-full h-[50px] flex p-2 items-center justify-between">
-      <DatePicker
-        value={dayjs(calendarDate)}
-        onChange={handleChangeCalendarDate}
-        picker="week"
-        format={dateFormat}
-        allowClear={false}
-      />
-      <div className="w-auto h-auto flex gap-2">
+    <div className="w-full min-h-[50px] flex flex-wrap gap-2 p-2 items-center justify-between bg-white border-b">
+      <div className="flex-1 min-w-[200px]">
+        <DatePicker
+          value={dayjs(calendarDate)}
+          onChange={handleChangeCalendarDate}
+          picker="week"
+          format={dateFormat}
+          allowClear={false}
+          className="w-full sm:w-auto"
+        />
+      </div>
+      <div className="flex gap-2">
         <Button
-          className="bg-[#f2f8fb]"
+          className="bg-[#f2f8fb] text-xs sm:text-sm h-8 sm:h-10"
           onClick={() => handleChangeOffset(scope === "day" ? -1 : -7)}
           variant="secondary"
         >
-          {scope === "day" ? "Previous day" : "Previous week"}
+          {scope === "day" ? "Prev day" : "Prev week"}
         </Button>
         <Button
-          className="bg-[#f2f8fb]"
+          className="bg-[#f2f8fb] text-xs sm:text-sm h-8 sm:h-10"
           onClick={() => handleChangeOffset(scope === "day" ? 1 : 7)}
           variant="secondary"
         >

@@ -1,5 +1,4 @@
 "use client";
-import { Groups } from "./lib/utils";
 import Calendar from "react-weekly-planning";
 import Actions from "./components/navigate-actions";
 import { Toaster } from "sonner";
@@ -14,6 +13,8 @@ import {
 import { useTasks } from "./components/custom-hooks/useTask";
 import { useEffect, useMemo, useState } from "react";
 
+import AddGroupDialog from "./components/create-group/create-group-dialog";
+
 // Home component
 
 export default function Home() {
@@ -23,12 +24,14 @@ export default function Home() {
     calendarOffset,
     setCalendarOffset,
     tasks,
+    groups,
     handleDropTask,
     handleDragTask,
     handleDragTaskEnd,
   } = useTasks();
 
   const [scope, setScope] = useState<"week" | "day">("week");
+  const [groupColWidth, setGroupColWidth] = useState("150px");
 
   const dominantColorClass = useMemo(() => {
     if (!tasks || tasks.length === 0) return "bg-white";
@@ -58,8 +61,10 @@ export default function Home() {
     const handleResize = () => {
       if (window.innerWidth <= 1024) {
         setScope("day");
+        setGroupColWidth(window.innerWidth < 640 ? "80px" : "120px");
       } else {
         setScope("week");
+        setGroupColWidth("150px");
       }
     };
 
@@ -98,19 +103,21 @@ export default function Home() {
           `}</style>
           <Calendar
             className={`${rublik.className} rounded border-t calendar`}
-            taskContainerStyle={{ border: "none", zIndex: 10, borderRadius: "10px" }}
-            groupsColsStyle={{ width: "100px" }}
+            taskContainerStyle={{ border: "none", zIndex: 10, borderRadius: "10px", overflow: "hidden" }}
+            groupsColsStyle={{ width: groupColWidth }}
             tasks={tasks}
             groupsHeadRender={() => (
               <div 
-                className={`w-full h-full text-left flex items-center pl-4 font-bold transition-colors duration-500 ${dominantColorClass.replace('bg-', 'text-').replace('-50', '-900')}`}
+                className={`w-full h-full text-left flex justify-between items-center px-2 sm:px-4 font-bold transition-colors duration-500 text-xs sm:text-base ${dominantColorClass.replace('bg-', 'text-').replace('-50', '-900')}`}
               >
-                My Activities
+                <span className="truncate">Activities</span>
+                <AddGroupDialog />
               </div>
             )}
-            dayClassName={`${montserrat.className} text-left pl-2`}
-            groups={Groups}
+            dayClassName={`${montserrat.className} text-left pl-2 text-xs sm:text-sm`}
+            groups={groups}
             date={calendarDate}
+
             weekOffset={calendarOffset}
             groupRender={GroupRender}
             addTaskRender={AddTaskTigger}
