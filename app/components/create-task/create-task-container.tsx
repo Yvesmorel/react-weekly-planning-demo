@@ -16,7 +16,7 @@ import {
 import {
   millisecondsToHours,
   checkDuplicates,
-} from "react-weekly-planning/lib/utils";
+} from "react-weekly-planning";
 import { useAppContext } from "../custom-hooks/context";
 const CreatePlanningContainer = ({
   currentGroup,

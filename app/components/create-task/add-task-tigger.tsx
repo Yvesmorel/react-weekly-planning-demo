@@ -26,7 +26,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { toast } from "sonner";
-import { checkDuplicates } from "react-weekly-planning/lib/utils";
+import { checkDuplicates } from "react-weekly-planning";
 
 type AddTaskTriggerPropsType = {
   currentGroup: GroupFeildsType;

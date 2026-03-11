@@ -2,11 +2,8 @@ import { faCode, faNotesMedical, faCopy, faScissors, faTrash } from "@fortawesom
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "antd";
 import { ReactNode, useMemo } from "react";
-import {
-  GroupFeildsType,
-  TaskFeildsType,
-} from "react-weekly-planning/definitions";
-import { millisecondsToHours } from "react-weekly-planning/lib/utils";
+
+
 import { useAppContext } from "./custom-hooks/context";
 import {
   ContextMenu,
@@ -37,6 +34,7 @@ export const getTaskColorClass = (task: TaskFeildsType) => {
 };
 
 import AddGroupDialog from "./create-group/create-group-dialog";
+import { GroupFeildsType, millisecondsToHours, TaskFeildsType } from "react-weekly-planning";
 
 const AVATAR_COLORS = [
   "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8",
@@ -63,8 +61,8 @@ export const GroupRender = ({
 
   return (
     <div className="w-full h-full flex items-center p-2 sm:p-4 gap-2 sm:gap-4 group cursor-pointer relative overflow-hidden">
-      <Avatar 
-        shape="square" 
+      <Avatar
+        shape="square"
         src={currentGroup.imageUrl}
         className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10"
         style={{ backgroundColor: getAvatarColor(currentGroup.label || ""), verticalAlign: 'middle', border: 'none' }}
@@ -112,7 +110,7 @@ export const TaskContainer = ({
   };
 
   const handleDelete = () => {
-    setTasks(tasks.filter((t) => t.taskId !== currentTask.taskId));
+    setTasks(tasks.filter((t: TaskFeildsType) => t.taskId !== currentTask.taskId));
     toast("Task deleted");
   };
 

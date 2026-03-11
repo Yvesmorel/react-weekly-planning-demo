@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, Dispatch, SetStateAction } from "react";
-import { TasksType, GroupFeildsType, TaskFeildsType } from "react-weekly-planning/definitions";
+import { GroupFeildsType, TaskContainerPropsType, TaskFeildsType, TasksType } from "react-weekly-planning";
 
 type AppContextType = {
   tasks: TasksType;
@@ -12,11 +12,11 @@ type AppContextType = {
 
 export const AppContext = createContext<AppContextType>({
   tasks: [],
-  setTasks: () => {},
+  setTasks: () => { },
   groups: [],
-  setGroups: () => {},
+  setGroups: () => { },
   clipboard: null,
-  setClipboard: () => {},
+  setClipboard: () => { },
 });
 
 export default function AppContextProvider({ children }: { children: JSX.Element }) {

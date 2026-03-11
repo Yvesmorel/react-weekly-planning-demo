@@ -1,12 +1,13 @@
 import {
   checkDuplicates,
   getSavedTasks,
-} from "react-weekly-planning/lib/utils";
+} from "react-weekly-planning";
 import { useAppContext } from "./context";
 import { DragEvent, useEffect, useState } from "react";
-import { TaskFeildsType, TasksType, GroupFeildsType } from "react-weekly-planning/definitions";
+
 import { toast } from "sonner";
 import { Groups as defaultGroups } from "@/app/lib/utils";
+import { GroupFeildsType, TaskFeildsType, TasksType } from "react-weekly-planning";
 
 export const getSavedGroups = (): GroupFeildsType[] => {
   if (typeof window !== "undefined") {

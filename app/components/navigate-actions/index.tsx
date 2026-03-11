@@ -5,7 +5,7 @@ import { Dispatch, memo, SetStateAction } from "react";
 import {
   updateCalendarDateWithOffset,
   updateOffsetWithDateCalendar,
-} from "react-weekly-planning/lib/utils";
+} from "react-weekly-planning";
 
 // Actions component
 type ActionsPropsType = {
