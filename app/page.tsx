@@ -4,6 +4,10 @@ import Actions from "./components/navigate-actions";
 import { Toaster } from "sonner";
 import { montserrat, rublik } from "./components/font";
 import AddTaskTigger from "./components/create-task/add-task-tigger";
+import { getCalendarDate } from "react-weekly-planning";
+
+// After the Calendar component has been rendered once:
+const now = getCalendarDate();
 import {
   GroupRender,
   getTaskColorClass,
@@ -58,6 +62,8 @@ export default function Home() {
   }, [tasks]);
 
   useEffect(() => {
+    console.log(now);
+
     const handleResize = () => {
       if (window.innerWidth <= 1024) {
         setScope("day");
@@ -123,7 +129,7 @@ export default function Home() {
             handleDragTask={handleDragTask}
             handleDragTaskEnd={handleDragTaskEnd}
             scope={scope}
-            timeZone="Africa/Abidjan"
+            timeZone="Africa/Casablanca"
             taskRender={TaskContainer}
             handleDropTask={handleDropTask}
           />
