@@ -21,28 +21,26 @@ const Actions = ({
   calendarDate,
   setCalendarOffset,
   calendarOffset,
-  scope,
-}: ActionsPropsType) => {
+}: {
+  setCalendarDate: Dispatch<SetStateAction<Date>>;
+  calendarDate: Date;
+  setCalendarOffset: Dispatch<SetStateAction<number>>;
+  calendarOffset: number;
+}) => {
 
   const handleChangeCalendarDate = (value: dayjs.Dayjs) => {
     setCalendarDate(value.toDate());
-
-
     const newOffset = updateOffsetWithDateCalendar(value.toDate());
-
     setCalendarOffset(newOffset);
   };
 
   const handleChangeOffset = (offset: number) => {
     const newOffset = calendarOffset + offset;
-    const newCalendarDate = updateCalendarDateWithOffset(newOffset);
-    setCalendarOffset((preOffset) => preOffset + offset);
-    setCalendarDate((preCalendarDate) => updateCalendarDateWithOffset(newOffset));
+    setCalendarOffset(newOffset);
+    setCalendarDate(updateCalendarDateWithOffset(newOffset));
   };
+
   const dateFormat = (value: dayjs.Dayjs) => {
-    if (scope === "day") {
-      return value.format("DD MMM YYYY");
-    }
     const startOfWeek = value.startOf("week").format("DD MMM YYYY");
     const endOfWeek = value.endOf("week").format("DD MMM YYYY");
     return `${startOfWeek} - ${endOfWeek}`;
@@ -63,17 +61,17 @@ const Actions = ({
       <div className="flex gap-2">
         <Button
           className="bg-[#f2f8fb] text-xs sm:text-sm h-8 sm:h-10"
-          onClick={() => handleChangeOffset(scope === "day" ? -1 : -7)}
+          onClick={() => handleChangeOffset(-7)}
           variant="secondary"
         >
-          {scope === "day" ? "Prev day" : "Prev week"}
+          Prev week
         </Button>
         <Button
           className="bg-[#f2f8fb] text-xs sm:text-sm h-8 sm:h-10"
-          onClick={() => handleChangeOffset(scope === "day" ? 1 : 7)}
+          onClick={() => handleChangeOffset(7)}
           variant="secondary"
         >
-          {scope === "day" ? "Next day" : "Next week"}
+          Next week
         </Button>
       </div>
     </div>

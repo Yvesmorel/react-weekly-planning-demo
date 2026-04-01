@@ -18,6 +18,7 @@ import { useTasks } from "./components/custom-hooks/useTask";
 import { useEffect, useMemo, useState } from "react";
 
 import AddGroupDialog from "./components/create-group/create-group-dialog";
+import { useAppContext } from "./components/custom-hooks/context";
 
 // Home component
 
@@ -34,8 +35,9 @@ export default function Home() {
     handleDragTaskEnd,
   } = useTasks();
 
+
   const { getTasks, tasks: calendarTasks } = useCalendarTaskContext();
-  const [scope, setScope] = useState<"week" | "day">("week");
+  const { dayOffset, setDayOfset } = useAppContext();
   const [groupColWidth, setGroupColWidth] = useState("150px");
 
   const dominantColorClass = useMemo(() => {
@@ -63,14 +65,10 @@ export default function Home() {
   }, [tasks]);
 
   useEffect(() => {
-
-
     const handleResize = () => {
       if (window.innerWidth <= 1024) {
-        setScope("day");
         setGroupColWidth(window.innerWidth < 640 ? "80px" : "120px");
       } else {
-        setScope("week");
         setGroupColWidth("150px");
       }
     };
@@ -91,7 +89,6 @@ export default function Home() {
           calendarDate={calendarDate}
           setCalendarDate={setCalendarDate}
           calendarOffset={calendarOffset}
-          scope={scope}
         />
       </div>
 
@@ -99,7 +96,7 @@ export default function Home() {
         className={`${rublik.className} rounded border-t calendar`}
         taskContainerStyle={{ border: "none", zIndex: 10, borderRadius: "10px", overflow: "hidden" }}
         groupsColsStyle={{ width: groupColWidth }}
-        dayOffset={0}
+
         groupsHeadRender={() => (
           <div
             className={`w-full h-full text-left flex justify-between items-center px-2 sm:px-4 font-bold transition-colors duration-500 text-xs sm:text-base ${dominantColorClass.replace('bg-', 'text-').replace('-50', '-900')}`}
@@ -119,9 +116,10 @@ export default function Home() {
         }}
         handleDragTask={handleDragTask}
         handleDragTaskEnd={handleDragTaskEnd}
-        scope={scope}
+
         taskRender={TaskContainer}
         handleDropTask={handleDropTask}
+
 
 
       />

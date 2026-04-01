@@ -26,8 +26,9 @@ export const getSavedGroups = (): GroupFeildsType[] => {
 };
 
 export const useTasks = () => {
-  const { addTask, updateTask, getTasks, tasks: calendarTasks, deleteTask, } = useCalendarTaskContext();
-  const { calendarOffset, setCalendarOffset } = useAppContext();
+
+  const { calendarOffset, setCalendarOffset, } = useAppContext();
+
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
   const { setTasks, tasks, groups, setGroups } = useAppContext();
 
