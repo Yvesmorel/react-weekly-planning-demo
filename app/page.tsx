@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 import { montserrat, rublik } from "./components/font";
 import AddTaskTigger from "./components/create-task/add-task-tigger";
 import { getCalendarDate } from "react-weekly-planning";
-
+import CalendarTaskContextProvider, { useCalendarTaskContext } from "react-weekly-planning/contexts/CalendarTaskContext";
 // After the Calendar component has been rendered once:
 const now = getCalendarDate();
 import {
@@ -34,6 +34,7 @@ export default function Home() {
     handleDragTaskEnd,
   } = useTasks();
 
+  const { getTasks, tasks: calendarTasks } = useCalendarTaskContext();
   const [scope, setScope] = useState<"week" | "day">("week");
   const [groupColWidth, setGroupColWidth] = useState("150px");
 
@@ -62,7 +63,7 @@ export default function Home() {
   }, [tasks]);
 
   useEffect(() => {
-    console.log(now);
+
 
     const handleResize = () => {
       if (window.innerWidth <= 1024) {
@@ -80,9 +81,11 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+
   return (
-    <main className="flex w-screen h-screen flex-col items-center justify-between ">
-      <div className="w-full h-full flex flex-col">
+
+    < div className="flex w-screen h-screen flex-col items-center  " >
+      <div className="w-full">
         <Actions
           setCalendarOffset={setCalendarOffset}
           calendarDate={calendarDate}
@@ -90,52 +93,42 @@ export default function Home() {
           calendarOffset={calendarOffset}
           scope={scope}
         />
-
-        <div className="w-full flex flex-1 overflow-auto ">
-          <style>{`
-            .calendar thead tr:first-child {
-              background-color: ${dominantColorClass.includes('blue') ? '#eff6ff' :
-              dominantColorClass.includes('emerald') ? '#ecfdf5' :
-                dominantColorClass.includes('rose') ? '#fff1f2' :
-                  dominantColorClass.includes('amber') ? '#fffbeb' :
-                    dominantColorClass.includes('purple') ? '#faf5ff' :
-                      dominantColorClass.includes('orange') ? '#fff7ed' :
-                        dominantColorClass.includes('teal') ? '#f0fdfa' :
-                          dominantColorClass.includes('pink') ? '#fdf2f8' : 'white'
-            } !important;
-              transition: background-color 0.5s ease;
-            }
-          `}</style>
-          <Calendar
-            className={`${rublik.className} rounded border-t calendar`}
-            taskContainerStyle={{ border: "none", zIndex: 10, borderRadius: "10px", overflow: "hidden" }}
-            groupsColsStyle={{ width: groupColWidth }}
-            tasks={tasks}
-            groupsHeadRender={() => (
-              <div
-                className={`w-full h-full text-left flex justify-between items-center px-2 sm:px-4 font-bold transition-colors duration-500 text-xs sm:text-base ${dominantColorClass.replace('bg-', 'text-').replace('-50', '-900')}`}
-              >
-                <span className="truncate">Activities</span>
-                <AddGroupDialog />
-              </div>
-            )}
-            dayClassName={`${montserrat.className} text-left pl-2 text-xs sm:text-sm`}
-            groups={groups}
-            date={calendarDate}
-
-            weekOffset={calendarOffset}
-            groupRender={GroupRender}
-            addTaskRender={AddTaskTigger}
-            handleDragTask={handleDragTask}
-            handleDragTaskEnd={handleDragTaskEnd}
-            scope={scope}
-            timeZone="Africa/Casablanca"
-            taskRender={TaskContainer}
-            handleDropTask={handleDropTask}
-          />
-        </div>
       </div>
-      <Toaster />
-    </main>
+
+      <Calendar
+        className={`${rublik.className} rounded border-t calendar`}
+        taskContainerStyle={{ border: "none", zIndex: 10, borderRadius: "10px", overflow: "hidden" }}
+        groupsColsStyle={{ width: groupColWidth }}
+        dayOffset={0}
+        groupsHeadRender={() => (
+          <div
+            className={`w-full h-full text-left flex justify-between items-center px-2 sm:px-4 font-bold transition-colors duration-500 text-xs sm:text-base ${dominantColorClass.replace('bg-', 'text-').replace('-50', '-900')}`}
+          >
+            <span className="truncate">Activities</span>
+            <AddGroupDialog />
+          </div>
+        )}
+        dayClassName={`${montserrat.className} text-left pl-2 text-xs sm:text-sm`}
+        groups={groups}
+        date={calendarDate}
+        weekOffset={calendarOffset}
+        groupRender={GroupRender}
+        addTaskRender={(props) => {
+
+          return <AddTaskTigger {...props} />
+        }}
+        handleDragTask={handleDragTask}
+        handleDragTaskEnd={handleDragTaskEnd}
+        scope={scope}
+        taskRender={TaskContainer}
+        handleDropTask={handleDropTask}
+
+
+      />
+
+
+
+    </div >
+
   );
 }

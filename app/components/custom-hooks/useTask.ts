@@ -1,14 +1,16 @@
 import {
+  addTask,
   checkDuplicates,
+
   getSavedTasks,
 } from "react-weekly-planning";
 import { useAppContext } from "./context";
 import { DragEvent, useEffect, useState } from "react";
-
+import { flushSync } from "react-dom";
 import { toast } from "sonner";
 import { Groups as defaultGroups } from "@/app/lib/utils";
 import { GroupFeildsType, TaskFeildsType, TasksType } from "react-weekly-planning";
-
+import { useCalendarTaskContext } from "react-weekly-planning";
 export const getSavedGroups = (): GroupFeildsType[] => {
   if (typeof window !== "undefined") {
     const saved = localStorage.getItem("groups");
@@ -24,9 +26,9 @@ export const getSavedGroups = (): GroupFeildsType[] => {
 };
 
 export const useTasks = () => {
-
+  const { addTask, updateTask, getTasks, tasks: calendarTasks, deleteTask, } = useCalendarTaskContext();
+  const { calendarOffset, setCalendarOffset } = useAppContext();
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
-  const [calendarOffset, setCalendarOffset] = useState<number>(0);
   const { setTasks, tasks, groups, setGroups } = useAppContext();
 
   useEffect(() => {
@@ -62,19 +64,14 @@ export const useTasks = () => {
       event.currentTarget.style.opacity = "0.3";
     }
 
+
+
+
   const handleDropTask =
     (
       event: DragEvent<HTMLDivElement>, taskStart: number, taskEnd: number, taskDate: Date, groupId: string, dayIndex: number, newTask: TaskFeildsType, newTasks: TasksType
     ) => {
-      if (!checkIfTaskExistInGroup(groupId, newTask.task)) {
-        toast(`${newTask.task} does not belong to the tasks of this group`);
-        return;
-      }
-      if (checkDuplicates(tasks, taskStart, taskEnd, newTask.groupId)) {
-        toast("Duplicates detected");
-        return;
-      }
-      setTasks(newTasks);
+
     }
 
 

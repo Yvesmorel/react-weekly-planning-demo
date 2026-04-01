@@ -2,6 +2,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AppContextProvider from "@/app/context/AppContext";
+import CalendarTaskContextProvider from "react-weekly-planning/contexts/CalendarTaskContext";
+
 const inter = Inter({ subsets: ["latin"] });
 export default function RootLayout({
   children,
@@ -10,9 +12,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <AppContextProvider>
-        <body className={inter.className}>{children}</body>
-      </AppContextProvider>
+      <CalendarTaskContextProvider>
+        <AppContextProvider>
+          <body className={inter.className}>{children}</body>
+        </AppContextProvider>
+      </CalendarTaskContextProvider>
     </html>
   );
 }

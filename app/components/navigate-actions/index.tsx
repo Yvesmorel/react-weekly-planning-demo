@@ -26,17 +26,19 @@ const Actions = ({
 
   const handleChangeCalendarDate = (value: dayjs.Dayjs) => {
     setCalendarDate(value.toDate());
+
+
     const newOffset = updateOffsetWithDateCalendar(value.toDate());
+
     setCalendarOffset(newOffset);
   };
 
   const handleChangeOffset = (offset: number) => {
     const newOffset = calendarOffset + offset;
-    const newCalendarDate = updateCalendarDateWithOffset(offset, calendarDate);
-    setCalendarOffset(newOffset);
-    setCalendarDate(newCalendarDate);
+    const newCalendarDate = updateCalendarDateWithOffset(newOffset);
+    setCalendarOffset((preOffset) => preOffset + offset);
+    setCalendarDate((preCalendarDate) => updateCalendarDateWithOffset(newOffset));
   };
-
   const dateFormat = (value: dayjs.Dayjs) => {
     if (scope === "day") {
       return value.format("DD MMM YYYY");
@@ -78,13 +80,5 @@ const Actions = ({
   );
 };
 
-export default memo(
-  Actions,
-  (
-    prevProps: Readonly<ActionsPropsType>,
-    nextProps: Readonly<ActionsPropsType>
-  ) =>
-    prevProps.calendarDate === nextProps.calendarDate &&
-    prevProps.calendarOffset === nextProps.calendarOffset &&
-    prevProps.scope === nextProps.scope
-);
+export default
+  Actions

@@ -15,7 +15,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   dayInfoType,
   GroupFeildsType,
-} from "react-weekly-planning/definitions";
+  updateOffsetWithDateCalendar,
+  useCalendarTaskContext,
+} from "react-weekly-planning";
 import CreatePlanningContainer from "./create-task-container";
 import { DragEvent } from "react";
 import { useAppContext } from "../custom-hooks/context";
@@ -27,6 +29,8 @@ import {
 } from "@/components/ui/context-menu";
 import { toast } from "sonner";
 import { checkDuplicates } from "react-weekly-planning";
+import { v4 as uuidv4 } from 'uuid';
+import { useTasks } from "../custom-hooks/useTask";
 
 type AddTaskTriggerPropsType = {
   currentGroup: GroupFeildsType;
@@ -34,6 +38,8 @@ type AddTaskTriggerPropsType = {
 };
 
 const AddTaskTrigger = ({ currentGroup, dayInfo }: AddTaskTriggerPropsType) => {
+  const { calendarOffset, setCalendarOffset } = useAppContext();
+  const { updateTask, addTask, deleteTask, tasks: calendarTasks } = useCalendarTaskContext();
   const tiggerHoverClassName = 'w-full flex-1 bg-[#c6dbe159] rounded-[5px]';
   const tiggerClassName = "w-full flex-1 bg-[#f2f8fb] opacity-0 rounded-[5px] hover:bg-[#c6dbe159] hover:opacity-100"
   const [timeOfdayRange, setTimeOfdayRange] = useState<number[]>([]);
@@ -56,15 +62,9 @@ const AddTaskTrigger = ({ currentGroup, dayInfo }: AddTaskTriggerPropsType) => {
     const newTaskEnd = newTaskStart + duration;
 
 
-    // Check if task belongs to group
-    if (!currentGroup.tasks.includes(clipboard.task.task)) {
-      toast(`${clipboard.task.task} does not belong to this group`);
-      return;
-    }
-
     const newTask = {
       ...clipboard.task,
-      taskId: Date.now().toString(),
+
       taskDate: dayInfo.day,
       groupId: currentGroup.id,
       dayIndex: dayInfo.positionDay,
@@ -73,24 +73,23 @@ const AddTaskTrigger = ({ currentGroup, dayInfo }: AddTaskTriggerPropsType) => {
     };
 
 
-    // Check duplicates
-    if (checkDuplicates(tasks, newTask.taskStart, newTask.taskEnd, currentGroup.id)) {
-      toast("Duplicates detected");
-      return;
-    }
 
 
-
-    let newTasksList = [...tasks];
 
     if (clipboard.action === "cut") {
-      newTasksList = newTasksList.filter(t => t.taskId !== clipboard.task.taskId);
+      if (clipboard.task.hash) deleteTask(clipboard.task.hash, clipboard.task.id);
+      addTask({ ...newTask, id: clipboard.task.id });
+
     }
 
-    setTasks([...newTasksList, newTask]);
+
+
+
+    if (clipboard.action === "copy") addTask({ ...newTask, id: uuidv4() });
     setClipboard(null);
     toast(`Task ${clipboard.action === "cut" ? "moved" : "pasted"} successfully`);
   };
+
 
   const currentDayDate = CustomDate(dayInfo.day.toDateString());
 

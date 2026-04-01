@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "antd";
 import { ReactNode, useMemo } from "react";
 
-
+import { updateOffsetWithDateCalendar, useCalendarTaskContext } from "react-weekly-planning";
 import { useAppContext } from "./custom-hooks/context";
 import {
   ContextMenu,
@@ -12,7 +12,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { toast } from "sonner";
-
+import { useTasks } from "./custom-hooks/useTask";
 export const MODERN_COLORS = [
   "bg-blue-50 border-blue-400 text-blue-900 shadow-blue-100",
   "bg-emerald-50 border-emerald-400 text-emerald-900 shadow-emerald-100",
@@ -25,7 +25,9 @@ export const MODERN_COLORS = [
 ];
 
 export const getTaskColorClass = (task: TaskFeildsType) => {
-  const str = `${task.id}-${task.task}-${task.groupId}-${task.taskStart}`;
+  // Use task.hash or taskDate to ensure unique color per day
+  const dateStr = task.hash || (task.taskDate ? new Date(task.taskDate).toDateString() : task.dayIndex?.toString() || '0');
+  const str = `day-color-${dateStr}`;
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -60,7 +62,7 @@ export const GroupRender = ({
 
 
   return (
-    <div className="w-full h-full flex items-center p-2 sm:p-4 gap-2 sm:gap-4 group cursor-pointer relative overflow-hidden">
+    <div className="w-full h-full flex items-start p-2 sm:p-4 gap-2 sm:gap-4 group cursor-pointer relative overflow-hidden">
       <Avatar
         shape="square"
         src={currentGroup.imageUrl}
@@ -89,12 +91,14 @@ export const TaskContainer = ({
 }: {
   currentTask: TaskFeildsType;
 }): ReactNode => {
+  const { calendarOffset, setCalendarOffset } = useAppContext();
+  const { deleteTask } = useCalendarTaskContext();
   const { groups, tasks, setTasks, setClipboard, clipboard } = useAppContext();
   const taskGroup = groups.find((group) => group.id === currentTask.groupId);
 
   const colorClass = useMemo(() => getTaskColorClass(currentTask), [currentTask]);
 
-  const isInClipboard = clipboard?.task?.taskId === currentTask.taskId;
+  const isInClipboard = clipboard?.task?.id === currentTask.id;
   const isCut = isInClipboard && clipboard?.action === "cut";
 
   const animationClass = `task-container-anim ${isInClipboard ? "task-in-clipboard" : ""} ${isCut ? "task-cut-state" : ""}`;
@@ -110,7 +114,7 @@ export const TaskContainer = ({
   };
 
   const handleDelete = () => {
-    setTasks(tasks.filter((t: TaskFeildsType) => t.taskId !== currentTask.taskId));
+    if (currentTask.hash) deleteTask(currentTask.hash, currentTask.id);
     toast("Task deleted");
   };
 
@@ -118,9 +122,9 @@ export const TaskContainer = ({
     <ContextMenu>
       <ContextMenuTrigger className="w-full h-full">
         <div
-          className={`w-full h-full border-l-2 sm:border-l-4 flex flex-col justify-center px-1.5 sm:px-3 py-1 sm:py-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${colorClass} overflow-hidden ${animationClass}`}
+          className={`w-full h-full border-l-2 sm:border-l-4 flex flex-col justify-center px-1.5 sm:px-3 py-1 sm:py-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${colorClass} overflow-hidden`}
         >
-          <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1" onClick={() => console.log(currentTask)}>
             <FontAwesomeIcon
               style={{ color: taskGroup?.color }}
               icon={taskGroup?.type === "code" ? faCode : faNotesMedical}

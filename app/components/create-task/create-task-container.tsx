@@ -9,15 +9,16 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { montserrat } from "@/app/components/font";
 import { Button } from "@/components/ui/button";
-import {
-  GroupFeildsType,
-  dayInfoType,
-} from "react-weekly-planning/definitions";
+import { GroupFeildsType, dayInfoType, useCalendarTaskContext } from "react-weekly-planning";
+import { v4 as uuidv4 } from 'uuid';
 import {
   millisecondsToHours,
   checkDuplicates,
+  updateOffsetWithDateCalendar,
 } from "react-weekly-planning";
 import { useAppContext } from "../custom-hooks/context";
+import { useCalendarTask } from "react-weekly-planning";
+import { useTasks } from "../custom-hooks/useTask";
 const CreatePlanningContainer = ({
   currentGroup,
   timeOfdayRange,
@@ -27,6 +28,9 @@ const CreatePlanningContainer = ({
   timeOfdayRange: number[];
   dayInfo: dayInfoType;
 }) => {
+
+  const { calendarOffset, setCalendarOffset } = useAppContext();
+  const { addTask } = useCalendarTaskContext();
   const [selectedTimeStart, setSelectedTimeStart] = useState<number>(
     timeOfdayRange[0]
   );
@@ -59,19 +63,21 @@ const CreatePlanningContainer = ({
 
 
     const newTask = {
+      id: uuidv4(),
       taskStart: selectedTimeStart,
       taskEnd: selectedTimeEnd,
       task: selectedTask,
       taskDate: dayInfo.day,
       groupId: currentGroup.id,
       dayIndex: dayInfo.positionDay,
-      taskId: `${tasks.length}`,
       taskExpiryDate: new Date(Date.now() + 86400000),
     };
 
 
 
-    setTasks([...tasks, newTask]);
+
+
+    addTask(newTask);
 
     toast("Task created");
   };
