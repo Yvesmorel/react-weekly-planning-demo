@@ -30,7 +30,6 @@ export default function Home() {
     setCalendarOffset,
     tasks,
     groups,
-    handleDropTask,
     handleDragTask,
     handleDragTaskEnd,
   } = useTasks();
@@ -111,17 +110,11 @@ export default function Home() {
         weekOffset={calendarOffset}
         groupRender={GroupRender}
         addTaskRender={(props) => {
-
           return <AddTaskTigger {...props} />
         }}
         handleDragTask={handleDragTask}
         handleDragTaskEnd={handleDragTaskEnd}
-
         taskRender={TaskContainer}
-        handleDropTask={handleDropTask}
-
-
-
       />
 
 

@@ -41,7 +41,7 @@ const CreatePlanningContainer = ({
     currentGroup.tasks[0]
   );
 
-  const { tasks, setTasks } = useAppContext();
+
 
   const handleAddTask = () => {
     if (selectedTimeStart >= selectedTimeEnd) {
@@ -49,17 +49,6 @@ const CreatePlanningContainer = ({
       return;
     }
 
-    if (
-      checkDuplicates(
-        tasks,
-        selectedTimeStart,
-        selectedTimeEnd,
-        currentGroup.id
-      )
-    ) {
-      toast("Duplicates detected");
-      return;
-    }
 
 
     const newTask = {

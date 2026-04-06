@@ -63,6 +63,8 @@ export const useTasks = () => {
       event.currentTarget.style.transition = "0.2s";
       event.currentTarget.style.transform = "rotate(5deg)";
       event.currentTarget.style.opacity = "0.3";
+
+
     }
 
 
@@ -72,6 +74,7 @@ export const useTasks = () => {
     (
       event: DragEvent<HTMLDivElement>, taskStart: number, taskEnd: number, taskDate: Date, groupId: string, dayIndex: number, newTask: TaskFeildsType, newTasks: TasksType
     ) => {
+
 
     }
 
