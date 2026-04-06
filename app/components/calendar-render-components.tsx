@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "antd";
 import { ReactNode, useMemo } from "react";
 
-import { updateOffsetWithDateCalendar, useCalendarTaskContext } from "react-weekly-planning";
+import { updateOffsetWithDateCalendarForWeek, useCalendarTaskContext } from "react-weekly-planning";
 import { useAppContext } from "./custom-hooks/context";
 import {
   ContextMenu,

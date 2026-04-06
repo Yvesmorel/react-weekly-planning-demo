@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { Dispatch, memo, SetStateAction } from "react";
 import {
   updateCalendarDateWithOffset,
-  updateOffsetWithDateCalendar,
+  updateOffsetWithDateCalendarForWeek,
 } from "react-weekly-planning";
 
 // Actions component
@@ -30,7 +30,7 @@ const Actions = ({
 
   const handleChangeCalendarDate = (value: dayjs.Dayjs) => {
     setCalendarDate(value.toDate());
-    const newOffset = updateOffsetWithDateCalendar(value.toDate());
+    const newOffset = updateOffsetWithDateCalendarForWeek(value.toDate());
     setCalendarOffset(newOffset);
   };
 

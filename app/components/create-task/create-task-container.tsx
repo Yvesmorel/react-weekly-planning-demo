@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   millisecondsToHours,
   checkDuplicates,
-  updateOffsetWithDateCalendar,
+  updateOffsetWithDateCalendarForWeek,
 } from "react-weekly-planning";
 import { useAppContext } from "../custom-hooks/context";
 import { useCalendarTask } from "react-weekly-planning";
@@ -29,7 +29,7 @@ const CreatePlanningContainer = ({
   dayInfo: dayInfoType;
 }) => {
 
-  const { calendarOffset, setCalendarOffset } = useAppContext();
+
   const { addTask } = useCalendarTaskContext();
   const [selectedTimeStart, setSelectedTimeStart] = useState<number>(
     timeOfdayRange[0]

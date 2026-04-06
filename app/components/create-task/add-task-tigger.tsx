@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   dayInfoType,
   GroupFeildsType,
-  updateOffsetWithDateCalendar,
+  updateOffsetWithDateCalendarForWeek,
   useCalendarTaskContext,
 } from "react-weekly-planning";
 import CreatePlanningContainer from "./create-task-container";

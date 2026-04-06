@@ -9,52 +9,72 @@ A professional, high-performance weekly scheduling and planning interface built 
 To get started quickly, you need to wrap your application with the `CalendarTaskContextProvider` and use the `Calendar` component.
 
 ```tsx
+import React from "react"
 import { Calendar, CalendarTaskContextProvider, useCalendarTaskContext } from "react-weekly-planning";
 
 // A sub-component to access the context with useCalendarTaskContext()
 const MyCalendarContent = () => {
-  const { addTask } = useCalendarTaskContext();
-
+ const groups = [
+    { id: "1", label: "Developer A" },
+    { id: "2", label: "Developer B" }
+  ];
+  
   return (
     <Calendar
-      groups={myGroups} // Array of groups
+      groups={groups} // Array of groups
       date={new Date()} // Today's date
       weekOffset={0}      // Current week
       handleDragTask={() => {}} // Crucial: must be defined to enable internal drag-and-drop
       
       // Simple task creation trigger
       addTaskRender={({ currentGroup, dayInfo }) => (
-        <button 
-          onClick={() => {
-            const newTask = {
-              id: "new-task-id", // Should be generated using uuidv4()
-              task: "Meeting",
-              taskStart: dayInfo.start,
-              taskEnd: dayInfo.end,
-              taskDate: dayInfo.day,
-              groupId: currentGroup.id,
-              dayIndex: dayInfo.positionDay,
-              taskExpiryDate: new Date(Date.now() + 86400000),
-            };
-            addTask(newTask);
-          }}
-          className="w-full h-full opacity-0 hover:opacity-100 bg-blue-100 transition-opacity"
-        >
-          + Add Task
-        </button>
+        <AddTask
+          currentGroup={currentGroup}
+          dayInfo={dayInfo}
+        />
       )}
     />
   );
 };
 
 // Root component that provides the context required by useCalendarTaskContext()
-const MyCalendarApp = () => (
+const App = () => (
   <CalendarTaskContextProvider>
     <MyCalendarContent />
   </CalendarTaskContextProvider>
 );
 
-export default MyCalendarApp;
+const AddTask = ({ currentGroup, dayInfo }) => {
+  const { addTask } = useCalendarTaskContext();
+
+  const handleAddTask = () => {
+    const now = Date.now();
+
+    const newTask = {
+      id: `${now}`, 
+      task: "Meeting",
+      taskStart: now,
+      taskEnd: now + (2 * 60 * 60 * 1000), // 2 hours duration
+      taskDate: dayInfo.day,
+      groupId: currentGroup.id,
+      dayIndex: dayInfo.positionDay,
+      taskExpiryDate: new Date(now + 86400000), // Expires in 24h
+    };
+
+    addTask(newTask);
+  };
+
+  return (
+    <button
+      onClick={handleAddTask}
+      className="w-full h-full opacity-0 hover:opacity-100 bg-blue-100 transition-opacity"
+    >
+      + Add Task
+    </button>
+  );
+};
+
+export default App;
 ```
 
 ---
